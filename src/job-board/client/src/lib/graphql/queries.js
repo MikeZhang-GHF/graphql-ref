@@ -23,39 +23,57 @@ export const getJobs = async () => {
 
 //  Get a single job by id
 export const getJob = async (id) => {
-  const query = gql`
-    query JobQuery($id: ID!) {
-      job(id: $id) {
-        id
-        title
-        company {
-          id
-          name
-        }
-        date
-        description
-      }
-    }
-  `;
-  const { job } = await client.request(query, { id });
-  return job;
-}
+	const query = gql`
+		query JobQuery($id: ID!) {
+			job(id: $id) {
+				id
+				title
+				company {
+					id
+					name
+				}
+				date
+				description
+			}
+		}
+	`;
+	const { job } = await client.request(query, { id });
+	return job;
+};
 
 export const getCompany = async (id) => {
-  const query = gql`
-    query CompanyQuery($id: ID!) {
-      company(id: $id) {
-        id
-        name
-        description
-        jobs {
-          id
-          date
-          title
-        }
-      }
-    }
-  `;
-  const { company } = await client.request(query, { id });
-  return company;
-}
+	const query = gql`
+		query CompanyQuery($id: ID!) {
+			company(id: $id) {
+				id
+				name
+				description
+				jobs {
+					id
+					date
+					title
+				}
+			}
+		}
+	`;
+	const { company } = await client.request(query, { id });
+	return company;
+};
+
+export const createJob = async (input) => {
+	const mutation = gql`
+		mutation CreateJob($input: CreateJobInput!) {
+			job: createJob(input: $input) {
+				id
+				date
+				title
+				company {
+					id
+					name
+				}
+			}
+		}
+	`;
+	const { job } = await client.request(mutation, { input });
+	return job;
+};
