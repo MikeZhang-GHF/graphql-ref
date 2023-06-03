@@ -49,11 +49,14 @@ export const resolvers = {
 			if (!user) {
 				throw unauthorizedError('Missing authentication');
 			}
-			const job = await updateJob({ ...input, companyId: user.companyId });
+			const job = await updateJob({
+				...input,
+				companyId: user.companyId,
+			});
 			if (!job) {
 				throw NotFoundError(`No Job found with id : ${id}`);
 			}
-			return job
+			return job;
 		},
 	},
 
@@ -62,7 +65,11 @@ export const resolvers = {
 	},
 
 	Job: {
-		company: (job) => getCompany(job.companyId),
+		// company: (job) => getCompany(job.companyId),
+		// use data loader to batch company requests, batching
+		company: (job, _args, { companyLoader }) => {
+			return companyLoader.load(job.companyId)
+		},
 		date: (job) => toISODate(job.createdAt),
 	},
 };
