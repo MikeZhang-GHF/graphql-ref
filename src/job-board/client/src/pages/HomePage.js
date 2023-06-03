@@ -1,6 +1,7 @@
 import JobList from '../components/JobList';
 import { useJobs } from '../lib/graphql/hooks';
 import { useState } from 'react';
+import PaginationBar from '../components/PaginationBar';
 
 const JOBS_PER_PAGE = 5;
 
@@ -24,19 +25,11 @@ const HomePage = () => {
 	return (
 		<div>
 			<h1 className="title">Job Board</h1>
-			<button
-				disabled={currentPage <= 1}
-				onClick={() => setCurrentPage(currentPage - 1)}
-			>
-				Previous
-			</button>
-			<span> {`${currentPage} of ${totalPages}`}</span>
-			<button
-				disabled={currentPage >= totalPages}
-				onClick={() => setCurrentPage(currentPage + 1)}
-			>
-				Next
-			</button>
+			<PaginationBar
+				currentPage={currentPage}
+				totalPages={totalPages}
+				onPageChange={setCurrentPage}
+			/>
 			<JobList jobs={jobs.items} />
 		</div>
 	);
