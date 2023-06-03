@@ -1,54 +1,27 @@
-import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
-// import { companies } from '../lib/fake-data';
-import { getCompany } from '../lib/graphql/queries';
 import JobList from '../components/JobList';
-
+import { useCompany } from '../lib/graphql/hooks';
 
 const CompanyPage = () => {
-  const { companyId } = useParams();
-  // const [company, setCompany] = useState(null);
-  const [state, setState] = useState({
-    company: null,
-    loading: true,
-    error: false,
-  });
+	const { companyId } = useParams();
+	const { company, loading, error } = useCompany(companyId);
 
-  useEffect(() => {
-    // anonymouse async function to handle errors
-    (async () => {
-      try {
-        const company = await getCompany(companyId);
-        setState({ company, loading: false, error: false });
-      } catch (error) {
-        setState({ company: null, loading: false, error: true });
-      }
-    })();
-  }, [companyId]);
+	if (loading) {
+		return <div>Loading...</div>;
+	}
+	if (error) {
+		console.log('error:', JSON.stringify(error, null, 2));
+		return <div className="has-text-danger">Data unavailable</div>;
+	}
 
-  const { company, loading, error } = state;  
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    console.log('error:', JSON.stringify(error, null, 2));
-    return <div className="has-text-danger">Data unavailable</div>;
-  }
-  // const company = companies.find((company) => company.id === companyId);
-  return (
-    <div>
-      <h1 className="title">
-        {company.name}
-      </h1>
-      <div className="box">
-        {company.description}
-      </div>
-      <h2 className="title is-5">
-        Jobs at {company.name}
-      </h2>
-      <JobList jobs={company.jobs} />
-    </div>
-  );
-}
+	return (
+		<div>
+			<h1 className="title">{company.name}</h1>
+			<div className="box">{company.description}</div>
+			<h2 className="title is-5">Jobs at {company.name}</h2>
+			<JobList jobs={company.jobs} />
+		</div>
+	);
+};
 
 export default CompanyPage;
