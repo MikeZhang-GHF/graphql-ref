@@ -5,13 +5,18 @@ import {
 	createJob,
 	deleteJob,
 	updateJob,
+	countJobs,
 } from './db/jobs.js';
 import { getCompany } from './db/companies.js';
 import { GraphQLError } from 'graphql';
 
 export const resolvers = {
 	Query: {
-		jobs: () => getJobs(),
+		jobs: async (_root, { limit, offset }) => {
+			const items = await getJobs(limit, offset);
+			const totalCount = await countJobs();
+			return { items, totalCount };
+		},
 		job: async (_root, { id }) => {
 			const job = await getJob(id);
 			if (!job) {
@@ -68,7 +73,7 @@ export const resolvers = {
 		// company: (job) => getCompany(job.companyId),
 		// use data loader to batch company requests, batching
 		company: (job, _args, { companyLoader }) => {
-			return companyLoader.load(job.companyId)
+			return companyLoader.load(job.companyId);
 		},
 		date: (job) => toISODate(job.createdAt),
 	},
