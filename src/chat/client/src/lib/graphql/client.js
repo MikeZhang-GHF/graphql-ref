@@ -1,7 +1,6 @@
 import { ApolloClient, ApolloLink, concat, createHttpLink, InMemoryCache } from '@apollo/client';
 import { getAccessToken } from '../auth';
 
-const httpLink = createHttpLink({ uri: 'http://localhost:9000/graphql' });
 
 const authLink = new ApolloLink((operation, forward) => {
   const accessToken = getAccessToken();
@@ -13,7 +12,11 @@ const authLink = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
+const httpLink = concat(authLink, createHttpLink({ 
+  uri: 'http://localhost:9000/graphql',
+}));
+
 export const apolloClient = new ApolloClient({
-  link: concat(authLink, httpLink),
+  link: httpLink,
   cache: new InMemoryCache(),
 });

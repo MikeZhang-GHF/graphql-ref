@@ -115,6 +115,10 @@ mutation {
   }
 }
 ```
+- Subscription
+```sh
+npm i graphql-ws ws @graphql-tools/schema
+```
 
 
 
